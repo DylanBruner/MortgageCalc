@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d2d2d">
+    <meta name="description" content="A simple mortgage payment calculator">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Mortgage Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Mortgage Payment Calculator</h1>
+        <div class="calculator">
+            <div class="parameters">
+                <div class="input-group">
+                    <label for="homePrice">Home Price ($)</label>
+                    <input type="number" id="homePrice" value="300000" min="0" step="1000">
+                </div>
+
+                <div class="loan-details additional-costs">
+                    <button class="dropdown-toggle active" id="loanDetailsToggle">
+                        Loan Details
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="dropdown-content show" id="loanDetailsContent">
+                        <div class="input-group">
+                            <label for="interestRate">Annual Interest Rate (%)</label>
+                            <input type="number" id="interestRate" value="6.25" min="0" step="0.01">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="downPaymentPercent">Down Payment (%)</label>
+                            <input type="number" id="downPaymentPercent" value="3" min="0" step="0.1">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="loanYears">Loan Term (Years)</label>
+                            <input type="number" id="loanYears" value="30" min="1" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="additional-costs">
+                    <button class="dropdown-toggle" id="additionalCostsToggle">
+                        Additional Costs & Options
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="additionalCostsContent">
+                        <div class="input-group">
+                            <label for="taxesPerYear">Annual Taxes ($)</label>
+                            <input type="number" id="taxesPerYear" value="3600" min="0" step="100">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="insurancePerYear">Annual Insurance ($)</label>
+                            <input type="number" id="insurancePerYear" value="1200" min="0" step="100">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="miTaxPercentage">MI Tax Rate (%)</label>
+                            <input type="number" id="miTaxPercentage" value="0.55" min="0" step="0.01">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="numberOfPeople">Number of People (for individual share)</label>
+                            <input type="number" id="numberOfPeople" value="1" min="1" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results">
+                <div class="result-item">
+                    <span class="label">Principal & Interest:</span>
+                    <span class="value" id="piResult">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">Total Monthly Payment:</span>
+                    <span class="value" id="totalResult">$0</span>
+                </div>
+                <div class="result-item individual-share">
+                    <span class="label">Individual Share:</span>
+                    <span class="value" id="individualResult">$0</span>
+                </div>
+            </div>
+
+            <div class="share-section">
+                <button id="shareButton" class="share-button">Share</button>
+                <div id="shareLink" class="share-link"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
