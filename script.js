@@ -272,11 +272,11 @@ loanDetailsToggle.addEventListener('click', () => {
 
 shareButton.addEventListener('click', () => {
     const shareUrl = generateShareLink();
-    shareLink.textContent = shareUrl;
     navigator.clipboard.writeText(shareUrl).then(() => {
+        const originalText = shareButton.textContent;
         shareButton.textContent = 'Copied!';
         setTimeout(() => {
-            shareButton.textContent = 'Share Calculator';
+            shareButton.textContent = originalText;
         }, 2000);
     });
 });
