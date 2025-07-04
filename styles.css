@@ -66,6 +66,24 @@ input:focus {
     background: #404040;
 }
 
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .additional-costs {
     grid-column: 1 / -1;
     border: 2px solid #404040;

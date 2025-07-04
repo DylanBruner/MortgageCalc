@@ -15,6 +15,8 @@ const taxesPerYearInput = document.getElementById('taxesPerYear');
 const insurancePerYearInput = document.getElementById('insurancePerYear');
 const miTaxPercentageInput = document.getElementById('miTaxPercentage');
 const numberOfPeopleInput = document.getElementById('numberOfPeople');
+const piOverrideEnabledInput = document.getElementById('piOverrideEnabled');
+const piOverrideInput = document.getElementById('piOverride');
 const piResult = document.getElementById('piResult');
 const totalResult = document.getElementById('totalResult');
 const shareButton = document.getElementById('shareButton');
@@ -77,7 +79,8 @@ function loadSavedValues() {
         'taxesPerYear',
         'insurancePerYear',
         'miTaxPercentage',
-        'numberOfPeople'
+        'numberOfPeople',
+        'piOverride'
     ];
 
     inputs.forEach(input => {
@@ -86,6 +89,13 @@ function loadSavedValues() {
             document.getElementById(input).value = savedValue;
         }
     });
+
+    // Load P&I override checkbox state
+    const piOverrideEnabled = urlParams.get('piOverrideEnabled') || localStorage.getItem('piOverrideEnabled');
+    if (piOverrideEnabled === 'true') {
+        piOverrideEnabledInput.checked = true;
+        piOverrideInput.disabled = false;
+    }
 
     // Load dropdown states
     const additionalCostsExpanded = localStorage.getItem('additionalCostsExpanded') === 'true';
@@ -121,15 +131,24 @@ function calculateMortgage() {
         const insurancePerYear = parseFloat(insurancePerYearInput.value) || 0;
         const miTaxPercentage = parseFloat(miTaxPercentageInput.value) / 100 || 0;
         const numberOfPeople = parseFloat(numberOfPeopleInput.value);
+        const piOverrideEnabled = piOverrideEnabledInput.checked;
+        const piOverride = parseFloat(piOverrideInput.value) || 0;
 
-        const pp = homePrice * (1 - downPaymentPercent);
-        const totalPayments = loanYears * 12;
-
-        const pi = pp * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, totalPayments)) / 
-                   (Math.pow(1 + monthlyInterestRate, totalPayments) - 1);
+        let pi;
+        if (piOverrideEnabled && piOverride > 0) {
+            // Use the override value
+            pi = piOverride;
+        } else {
+            // Calculate P&I normally
+            const pp = homePrice * (1 - downPaymentPercent);
+            const totalPayments = loanYears * 12;
+            pi = pp * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, totalPayments)) / 
+                 (Math.pow(1 + monthlyInterestRate, totalPayments) - 1);
+        }
 
         const taxes = taxesPerYear / 12;
         const insurance = insurancePerYear / 12;
+        const pp = homePrice * (1 - downPaymentPercent);
         const miTaxes = (pp * miTaxPercentage) / 12;
 
         const total = pi + taxes + miTaxes + insurance;
@@ -207,12 +226,16 @@ function saveToLocalStorage() {
         'taxesPerYear',
         'insurancePerYear',
         'miTaxPercentage',
-        'numberOfPeople'
+        'numberOfPeople',
+        'piOverride'
     ];
 
     inputs.forEach(input => {
         localStorage.setItem(input, document.getElementById(input).value);
     });
+
+    // Save P&I override checkbox state
+    localStorage.setItem('piOverrideEnabled', piOverrideEnabledInput.checked.toString());
 }
 
 // Generate share link
@@ -226,12 +249,16 @@ function generateShareLink() {
         'taxesPerYear',
         'insurancePerYear',
         'miTaxPercentage',
-        'numberOfPeople'
+        'numberOfPeople',
+        'piOverride'
     ];
 
     inputs.forEach(input => {
         url.searchParams.set(input, document.getElementById(input).value);
     });
+
+    // Add P&I override checkbox state to URL
+    url.searchParams.set('piOverrideEnabled', piOverrideEnabledInput.checked.toString());
 
     return url.toString();
 }
@@ -252,7 +279,8 @@ const inputs = [
     taxesPerYearInput,
     insurancePerYearInput,
     miTaxPercentageInput,
-    numberOfPeopleInput
+    numberOfPeopleInput,
+    piOverrideInput
 ];
 
 inputs.forEach(input => {
@@ -260,6 +288,20 @@ inputs.forEach(input => {
         updateResults();
         saveToLocalStorage();
     });
+});
+
+// P&I Override checkbox event listener
+piOverrideEnabledInput.addEventListener('change', () => {
+    piOverrideInput.disabled = !piOverrideEnabledInput.checked;
+    if (piOverrideEnabledInput.checked && !piOverrideInput.value) {
+        // If enabling override but no value set, calculate current P&I and set it
+        const results = calculateMortgage();
+        if (!results.error) {
+            piOverrideInput.value = results.pi;
+        }
+    }
+    updateResults();
+    saveToLocalStorage();
 });
 
 additionalCostsToggle.addEventListener('click', () => {
